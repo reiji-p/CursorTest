@@ -1,0 +1,79 @@
+{% extends 'base.html' %}
+
+{% block title %}
+{% if task %}タスク編集{% else %}新規タスク作成{% endif %} - Todoアプリ
+{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h2 class="mb-0">
+                    {% if task %}タスク編集{% else %}新規タスク作成{% endif %}
+                </h2>
+            </div>
+            <div class="card-body">
+                <form method="post">
+                    {{ form.hidden_tag() }}
+                    
+                    <div class="mb-3">
+                        <label for="{{ form.title.id }}" class="form-label">タスク名</label>
+                        {{ form.title() }}
+                        {% if form.title.errors %}
+                        <div class="invalid-feedback d-block">
+                            {% for error in form.title.errors %}
+                                {{ error }}
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="{{ form.memo.id }}" class="form-label">メモ</label>
+                        {{ form.memo() }}
+                        {% if form.memo.errors %}
+                        <div class="invalid-feedback d-block">
+                            {% for error in form.memo.errors %}
+                                {{ error }}
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="{{ form.genre.id }}" class="form-label">ジャンル</label>
+                        {{ form.genre() }}
+                        {% if form.genre.errors %}
+                        <div class="invalid-feedback d-block">
+                            {% for error in form.genre.errors %}
+                                {{ error }}
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">重要度</label>
+                        <div class="priority-radio">
+                            {{ form.priority() }}
+                        </div>
+                        {% if form.priority.errors %}
+                        <div class="invalid-feedback d-block">
+                            {% for error in form.priority.errors %}
+                                {{ error }}
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="d-flex justify-content-between">
+                        <a href="{{ url_for('task_list') }}" class="btn btn-secondary">キャンセル</a>
+                        <button type="submit" class="btn btn-primary">保存</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
