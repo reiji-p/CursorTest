@@ -1,0 +1,76 @@
+{% extends 'todo/base.html' %}
+
+{% block title %}タスク一覧 - Todoアプリ{% endblock %}
+
+{% block content %}
+<h1 class="mb-4">タスク一覧</h1>
+
+<div class="row mb-4">
+    <div class="col">
+        <a href="{% url 'task_create' %}" class="btn btn-primary">新規タスク作成</a>
+    </div>
+</div>
+
+<div class="row">
+    {% for task in tasks %}
+    <div class="col-md-6 mb-4">
+        <div class="card">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h5 class="card-title {% if task.is_completed %}task-completed{% endif %}">
+                        {{ task.title }}
+                    </h5>
+                    <div class="form-check">
+                        <input class="form-check-input task-status" type="checkbox" 
+                               data-task-id="{{ task.id }}"
+                               {% if task.is_completed %}checked{% endif %}>
+                    </div>
+                </div>
+                <p class="card-text">{{ task.memo|linebreaks }}</p>
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <span class="badge bg-secondary me-2">{{ task.get_genre_display }}</span>
+                        <span class="priority-{{ task.priority }}">重要度: {{ task.get_priority_display }}</span>
+                    </div>
+                    <div>
+                        <a href="{% url 'task_update' task.id %}" class="btn btn-sm btn-outline-primary">編集</a>
+                        <a href="{% url 'task_delete' task.id %}" class="btn btn-sm btn-outline-danger">削除</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <div class="col">
+        <p class="text-center">タスクがありません。</p>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+$(document).ready(function() {
+    $('.task-status').change(function() {
+        const taskId = $(this).data('task-id');
+        const checkbox = $(this);
+        
+        $.post(`/toggle/${taskId}/`, {
+            csrfmiddlewaretoken: '{{ csrf_token }}'
+        })
+        .done(function(response) {
+            const title = checkbox.closest('.card-body').find('.card-title');
+            if (response.is_completed) {
+                title.addClass('task-completed');
+            } else {
+                title.removeClass('task-completed');
+            }
+        })
+        .fail(function() {
+            alert('ステータスの更新に失敗しました。');
+            checkbox.prop('checked', !checkbox.prop('checked'));
+        });
+    });
+});
+</script>
+{% endblock %} 
